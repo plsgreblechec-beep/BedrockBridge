@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/sandertv/gophertunnel/minecraft"
+	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
 )
 
@@ -23,7 +24,8 @@ func ConnectToServer(config BridgeConfig) string {
 			Identity:    "00000000-0000-0000-0000-000000000000",
 		},
 		ClientData: login.ClientData{
-			DeviceOS:    config.DeviceOS,
+			// Вот здесь мы явно приводим тип к protocol.DeviceOS
+			DeviceOS:    protocol.DeviceOS(config.DeviceOS),
 			DeviceModel: config.DeviceModel,
 			LanguageCode: "ru_RU",
 		},
