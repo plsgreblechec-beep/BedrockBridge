@@ -43,8 +43,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew || true
 
+    # ВОТ ЗДЕСЬ ИЗМЕНЕНИЕ: Мы заходим в папку app и собираем её
     - name: Build APK
-      run: gradle assembleDebug
+      run: |
+        cd app
+        gradle assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
