@@ -22,7 +22,7 @@ jobs:
       run: |
         cd go-core
         go mod tidy
-        go install golang.org/x/mobile/cmd/gomobile@latest
+        go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20231108233038-3b5cc5b02f9a
         gomobile init
         gomobile bind -target=android -o ../app/libs/bridge.aar .
 
