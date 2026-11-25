@@ -25,6 +25,8 @@ jobs:
 
     - name: Build Go Library
       run: |
+        # ВОТ ЭТА СТРОЧКА СОЗДАЕТ ПАПКУ:
+        mkdir -p app/libs
         cd go-core
         go mod tidy
         go install golang.org/x/mobile/cmd/gomobile@latest
