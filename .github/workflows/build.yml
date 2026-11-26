@@ -43,11 +43,14 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew || true
 
-    # ВОТ ЗДЕСЬ ИЗМЕНЕНИЕ: Мы заходим в папку app и собираем её
-    - name: Build APK
+    # ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ: Мы явно скачиваем gradle-wrapper.jar перед сборкой
+    - name: Download gradle wrapper jar
       run: |
-        cd app
-        gradle assembleDebug
+        mkdir -p gradle/wrapper
+        curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradle/wrapper/gradle-wrapper.jar
+
+    - name: Build APK
+      run: ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
