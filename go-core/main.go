@@ -3,6 +3,7 @@ package bridge
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -11,6 +12,11 @@ import (
 )
 
 func ConnectToServer(serverAddr string, nickname string, deviceOS int32, deviceModel string) string {
+	// 1. Автоматически добавляем порт, если его нет
+	if !strings.Contains(serverAddr, ":") {
+		serverAddr += ":19132"
+	}
+
 	dialer := minecraft.Dialer{
 		IdentityData: login.IdentityData{
 			DisplayName: nickname,
@@ -21,6 +27,9 @@ func ConnectToServer(serverAddr string, nickname string, deviceOS int32, deviceM
 			DeviceModel: deviceModel,
 			LanguageCode: "ru_RU",
 		},
+		// 2. Указываем протокол 0. Это значит "использовать самый новый протокол, 
+		// который поддерживает библиотека" (сейчас это 1.21.x / 1.26.x)
+		Protocol: 0,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
