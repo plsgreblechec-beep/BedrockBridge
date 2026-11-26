@@ -34,7 +34,6 @@ class GameActivity : Activity() {
         val os = intent.getIntExtra("OS", 1)
         val model = intent.getStringExtra("MODEL") ?: ""
 
-        // Черный фон для всего экрана
         window.decorView.setBackgroundColor(Color.BLACK)
 
         val mainLayout = LinearLayout(this).apply {
@@ -42,28 +41,24 @@ class GameActivity : Activity() {
             gravity = Gravity.CENTER
         }
 
-        // Создаем белый круг (только рамка)
         val circleLayout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            
+            gravity = Gravity.CENTER // Выравниваем содержимое по центру
             val drawable = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setStroke(10, Color.WHITE) // Белая рамка
-                setColor(Color.TRANSPARENT) // Пустой внутри
+                setStroke(10, Color.WHITE)
+                setColor(Color.TRANSPARENT)
             }
             background = drawable
             layoutParams = LinearLayout.LayoutParams(700, 700)
-            
-            // Нажатие на круг = выход
             setOnClickListener { finish() }
         }
 
-        // Таймер внутри круга
         tvTimer = TextView(this).apply {
             text = "00:00"
             textSize = 48f
             setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER // Центрируем текст
         }
 
         circleLayout.addView(tvTimer)
@@ -72,15 +67,12 @@ class GameActivity : Activity() {
 
         handler.post(tick)
 
-        // Подключение к серверу
-        Toast.makeText(this, "Подключение к $ip как $model...", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Подключение...", Toast.LENGTH_SHORT).show()
         thread {
             val res = Bridge.connectToServer(ip, nick, os, model)
             runOnUiThread {
                 if (res != "Успешно подключено!") {
                     Toast.makeText(this, res, Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "Успешно!", Toast.LENGTH_SHORT).show()
                 }
             }
         }
