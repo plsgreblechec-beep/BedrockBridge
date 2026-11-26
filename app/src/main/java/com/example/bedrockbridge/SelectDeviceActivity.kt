@@ -25,8 +25,8 @@ class SelectDeviceActivity : Activity() {
         }
 
         val btnPc = Button(this).apply {
-            text = "🖥 ПК"
-            textSize = 20f
+            text = "ПК"
+            textSize = 22f
             setBackgroundColor(accentColor)
             setTextColor(Color.WHITE)
             layoutParams = LinearLayout.LayoutParams(
@@ -36,8 +36,8 @@ class SelectDeviceActivity : Activity() {
         }
 
         val btnPhone = Button(this).apply {
-            text = "📱 Телефон"
-            textSize = 20f
+            text = "ТЕЛЕФОН"
+            textSize = 22f
             setBackgroundColor(accentColor)
             setTextColor(Color.WHITE)
             layoutParams = LinearLayout.LayoutParams(
@@ -47,8 +47,8 @@ class SelectDeviceActivity : Activity() {
         }
 
         val btnConsole = Button(this).apply {
-            text = "🎮 Консоль"
-            textSize = 20f
+            text = "КОНСОЛЬ"
+            textSize = 22f
             setBackgroundColor(accentColor)
             setTextColor(Color.WHITE)
             layoutParams = LinearLayout.LayoutParams(
