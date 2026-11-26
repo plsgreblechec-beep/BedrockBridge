@@ -4,7 +4,9 @@
     <application
         android:allowBackup="true"
         android:label="Bedrock Bridge"
-        android:theme="@style/Theme.AppCompat.DayNight">
+        android:icon="@drawable/ic_launcher_custom" 
+        android:theme="@style/Theme.BedrockBridge">
+        
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -12,5 +14,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".GameActivity" />
+        <activity android:name=".SelectDeviceActivity" />
     </application>
 </manifest>
