@@ -26,8 +26,7 @@ func ConnectToServer(serverAddr string, nickname string, deviceOS int32, deviceM
 			DeviceModel: deviceModel,
 			LanguageCode: "ru_RU",
 		},
-		// Используем CurrentProtocol, чтобы автоматически подтягивалась самая новая версия
-		Protocol: protocol.CurrentProtocol,
+		// Строку с Protocol мы убрали. Библиотека сама выберет нужную.
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
