@@ -1,45 +1,115 @@
 package com.example.bedrockbridge
 
-// ... импорты ...
-import org.cloudburstmc.protocol.bedrock.BedrockClientSession
-import org.cloudburstmc.protocol.bedrock.BedrockPipelines
-import org.cloudburstmc.protocol.bedrock.codec.v622.Bedrock_v622
-import org.cloudburstmc.protocol.bedrock.data.DeviceOS
-import org.cloudburstmc.protocol.bedrock.netty.codec.encryption.BedrockEncryption
-import org.cloudburstmc.protocol.bedrock.packet.LoginPacket
-import java.net.InetSocketAddress
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.os.Bundle
+import android.view.Gravity
+import android.widget.*
+import android.view.View
 
-// Внутри функции connect (которая вызывается по кнопке):
-private fun connectToServer(ip: String, port: Int, nick: String) {
-    Thread {
-        try {
-            // Создаем клиентскую сессию (в новой версии 1.26.60 используется протокол v622+)
-            // ВНИМАНИЕ: Это упрощенный пример, полная настройка требует много кода
-            val session = BedrockClientSession(InetSocketAddress(ip, port))
+class MainActivity : Activity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        window.decorView.setBackgroundColor(Color.BLACK)
+
+        val mainLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 50, 50, 50)
+        }
+
+        val headerLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.END
+        }
+        
+        val btnSettings = ImageButton(this).apply {
+            setImageResource(R.drawable.ic_settings)
+            setBackgroundColor(Color.TRANSPARENT)
+            setColorFilter(Color.WHITE)
+            setOnClickListener { showColorPicker() }
+        }
+        headerLayout.addView(btnSettings)
+        mainLayout.addView(headerLayout)
+
+        val etIp = EditText(this).apply { hint = "IP сервера"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
+        val etPort = EditText(this).apply { hint = "Порт (19132)"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
+        val etNick = EditText(this).apply { hint = "Ваш ник"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
+
+        val accentColor = ThemeManager.getAccentColor(this)
+
+        val btnNext = Button(this).apply {
+            text = "Далее ➡"
+            textSize = 20f
+            setBackgroundColor(accentColor)
+            setTextColor(Color.WHITE)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 150
+            ).apply { setMargins(0, 50, 0, 0) }
             
-            // Настраиваем пакет логина, где передаем устройство
-            val login = LoginPacket().apply {
-                protocolVersion = 622 // Версия протокола
-                // Устанавливаем фейковые данные устройства
-                clientPayload = mapOf(
-                    "DeviceOS" to 7, // 7 = Windows
-                    "DeviceModel" to "Windows 10",
-                    "LanguageCode" to "ru_RU"
-                )
-            }
-            
-            session.sendPacket(login)
-            
-            runOnUiThread {
-                Toast.makeText(this@MainActivity, "Попытка подключения...", Toast.LENGTH_SHORT).show()
-            }
-            
-            // Далее нужно слушать пакеты от сервера...
-            
-        } catch (e: Exception) {
-            runOnUiThread {
-                Toast.makeText(this@MainActivity, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+            setOnClickListener {
+                var ip = etIp.text.toString().trim()
+                val port = etPort.text.toString().trim()
+                val nick = etNick.text.toString().trim()
+
+                if (ip.isEmpty() || nick.isEmpty()) {
+                    Toast.makeText(this@MainActivity, "Заполните IP и ник!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                if (port.isNotEmpty() && !ip.contains(":")) {
+                    ip = "$ip:$port"
+                }
+
+                val intent = Intent(this@MainActivity, SelectDeviceActivity::class.java)
+                intent.putExtra("IP", ip)
+                intent.putExtra("NICK", nick)
+                startActivity(intent)
             }
         }
-    }.start()
+
+        mainLayout.addView(etIp)
+        mainLayout.addView(etPort)
+        mainLayout.addView(etNick)
+        mainLayout.addView(btnNext)
+
+        setContentView(mainLayout)
+    }
+
+    private fun showColorPicker() {
+        val builder = AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
+        builder.setTitle("Выберите цвет кнопок")
+
+        val colorLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(20, 40, 20, 40)
+        }
+
+        for (colorPair in ThemeManager.colors) {
+            val colorInt = colorPair.second
+            val colorCircle = View(this).apply {
+                val drawable = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(colorInt)
+                }
+                background = drawable
+                layoutParams = LinearLayout.LayoutParams(80, 80).apply {
+                    setMargins(10, 0, 10, 0)
+                }
+                setOnClickListener {
+                    ThemeManager.setAccentColor(this@MainActivity, colorInt)
+                    recreate() 
+                }
+            }
+            colorLayout.addView(colorCircle)
+        }
+
+        builder.setView(colorLayout)
+        builder.setNegativeButton("Отмена", null)
+        builder.show()
+    }
 }
