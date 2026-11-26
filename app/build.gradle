@@ -29,13 +29,6 @@ android {
     }
 }
 
-repositories {
-    google()
-    mavenCentral()
-    maven { url 'https://repo.opencollab.dev/main/' }
-    maven { url 'https://repo.powernukkitx.cn/repository/maven-public/' }
-}
-
 dependencies {
-    implementation 'org.cloudburstmc:protocol:3.0.0.Beta3'
+    implementation files('libs/bridge.aar')
 }
