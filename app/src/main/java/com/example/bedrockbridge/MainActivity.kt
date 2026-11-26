@@ -1,73 +1,102 @@
 package com.example.bedrockbridge
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
-import bridge.Bridge
-import kotlin.concurrent.thread
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        val layout = LinearLayout(this).apply {
+        // Черная тема
+        window.decorView.setBackgroundColor(Color.BLACK)
+
+        val mainLayout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(50, 50, 50, 50)
         }
 
-        val etIp = EditText(this).apply { hint = "IP сервера" }
-        val etNick = EditText(this).apply { hint = "Ваш ник" }
-        val btnPc = Button(this).apply { text = "🖥 Подключиться как ПК" }
-        val btnPhone = Button(this).apply { text = "📱 Подключиться как Телефон" }
-        val btnConsole = Button(this).apply { text = "🎮 Подключиться как Консоль" }
-        val tvStatus = TextView(this).apply { text = "Статус: Ожидание" }
-
-        layout.addView(etIp)
-        layout.addView(etNick)
-        layout.addView(btnPc)
-        layout.addView(btnPhone)
-        layout.addView(btnConsole)
-        layout.addView(tvStatus)
-
-        setContentView(layout)
-
-        btnPc.setOnClickListener {
-            connect(etIp.text.toString(), etNick.text.toString(), 7, DeviceGenerator.getRandomPC(), tvStatus)
+        // Шапка с кнопкой настроек
+        val headerLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.END
         }
-        btnPhone.setOnClickListener {
-            connect(etIp.text.toString(), etNick.text.toString(), 1, DeviceGenerator.getRandomPhone(), tvStatus)
-        }
-        btnConsole.setOnClickListener {
-            connect(etIp.text.toString(), etNick.text.toString(), 13, DeviceGenerator.getRandomConsole(), tvStatus)
-        }
-    }
-
-    private fun connect(ip: String, nick: String, os: Int, model: String, tv: TextView) {
-        if (ip.isEmpty() || nick.isEmpty()) {
-            Toast.makeText(this, "Заполните поля!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        tv.text = "Подключение как $model..."
         
-        thread {
-            try {
-                // Вызываем функцию напрямую с 4 аргументами
-                val res = Bridge.connectToServer(ip, nick, os, model)
-                runOnUiThread {
-                    tv.text = res
-                    if (res == "Успешно подключено!") {
-                        val intent = Intent(this, GameActivity::class.java)
-                        startActivity(intent)
-                    }
+        val btnSettings = Button(this).apply {
+            text = "⚙"
+            textSize = 24f
+            setBackgroundColor(Color.TRANSPARENT)
+            setTextColor(Color.WHITE)
+            setOnClickListener { showSettingsDialog() }
+        }
+        
+        headerLayout.addView(btnSettings)
+        mainLayout.addView(headerLayout)
+
+        // Поля ввода
+        val etIp = EditText(this).apply { hint = "IP сервера"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
+        val etPort = EditText(this).apply { hint = "Порт (по умолч. 19132)"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
+        val etNick = EditText(this).apply { hint = "Ваш ник"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
+        
+        val accentColor = ThemeManager.getAccentColor(this)
+
+        val btnNext = Button(this).apply {
+            text = "Далее ➡"
+            textSize = 20f
+            setBackgroundColor(accentColor)
+            setTextColor(Color.WHITE)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 150
+            ).apply { setMargins(0, 50, 0, 0) }
+            
+            setOnClickListener {
+                var ip = etIp.text.toString().trim()
+                val port = etPort.text.toString().trim()
+                val nick = etNick.text.toString().trim()
+
+                if (ip.isEmpty() || nick.isEmpty()) {
+                    Toast.makeText(this@MainActivity, "Заполните IP и ник!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
                 }
-            } catch (e: Exception) {
-                runOnUiThread { tv.text = "Ошибка: ${e.message}" }
+
+                if (port.isNotEmpty() && !ip.contains(":")) {
+                    ip = "$ip:$port"
+                }
+
+                val intent = Intent(this@MainActivity, SelectDeviceActivity::class.java)
+                intent.putExtra("IP", ip)
+                intent.putExtra("NICK", nick)
+                startActivity(intent)
             }
         }
+
+        mainLayout.addView(etIp)
+        mainLayout.addView(etPort)
+        mainLayout.addView(etNick)
+        mainLayout.addView(btnNext)
+
+        setContentView(mainLayout)
+    }
+
+    private fun showSettingsDialog() {
+        val builder = AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
+        builder.setTitle("Выберите цвет темы")
+        
+        val colorNames = ThemeManager.colors.map { it.first }.toTypedArray()
+        builder.setItems(colorNames) { _, which ->
+            val selectedColor = ThemeManager.colors[which].second
+            ThemeManager.setAccentColor(this, selectedColor)
+            recreate() // Перезагружаем экран, чтобы применить цвет
+        }
+        
+        builder.setNegativeButton("Отмена", null)
+        builder.show()
     }
 }
