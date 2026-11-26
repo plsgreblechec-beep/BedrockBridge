@@ -1,4 +1,41 @@
+plugins {
+    id 'com.android.application' version '8.2.0'
+    id 'org.jetbrains.kotlin.android' version '1.9.0'
+}
+
+android {
+    namespace 'com.example.bedrockbridge'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.example.bedrockbridge"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    maven { url 'https://repo.opencollab.dev/main/' }
+    maven { url 'https://repo.powernukkitx.cn/repository/maven-public/' }
+}
+
 dependencies {
-    // Берем базовый протокол Cloudburst (без nukkit, он нам пока не нужен)
     implementation 'org.cloudburstmc:protocol:3.0.0.Beta3'
 }
