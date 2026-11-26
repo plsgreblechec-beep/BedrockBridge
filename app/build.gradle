@@ -1,16 +1,7 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.0'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0'
-    }
+plugins {
+    id 'com.android.application' version '8.2.0'
+    id 'org.jetbrains.kotlin.android' version '1.9.0'
 }
-
-apply plugin: 'com.android.application'
-apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     namespace 'com.example.bedrockbridge'
@@ -39,6 +30,7 @@ android {
 }
 
 dependencies {
+    // Указываем официальный URL для AppCompat
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation files('libs/bridge.aar')
 }
