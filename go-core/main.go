@@ -26,7 +26,6 @@ func ConnectToServer(serverAddr string, nickname string, deviceOS int32, deviceM
 			DeviceModel: deviceModel,
 			LanguageCode: "ru_RU",
 		},
-		Protocol: 898, // Принудительно 1.26.60
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
