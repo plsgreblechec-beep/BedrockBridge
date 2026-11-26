@@ -1,7 +1,7 @@
 module bridge
 
-go 1.22
+go 1.24
 
 require (
-	github.com/sandertv/gophertunnel v1.44.0
+	github.com/sandertv/gophertunnel v1.47.5
 )
