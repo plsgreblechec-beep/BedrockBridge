@@ -4,18 +4,16 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
+import android.view.View
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Черная тема
         window.decorView.setBackgroundColor(Color.BLACK)
 
         val mainLayout = LinearLayout(this).apply {
@@ -23,28 +21,25 @@ class MainActivity : Activity() {
             setPadding(50, 50, 50, 50)
         }
 
-        // Шапка с кнопкой настроек
+        // Шапка с шестеренкой
         val headerLayout = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.END
         }
         
-        val btnSettings = Button(this).apply {
-            text = "⚙"
-            textSize = 24f
+        val btnSettings = ImageButton(this).apply {
+            setImageResource(R.drawable.ic_settings)
             setBackgroundColor(Color.TRANSPARENT)
-            setTextColor(Color.WHITE)
-            setOnClickListener { showSettingsDialog() }
+            setColorFilter(Color.WHITE)
+            setOnClickListener { showColorPicker() }
         }
-        
         headerLayout.addView(btnSettings)
         mainLayout.addView(headerLayout)
 
-        // Поля ввода
         val etIp = EditText(this).apply { hint = "IP сервера"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
-        val etPort = EditText(this).apply { hint = "Порт (по умолч. 19132)"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
+        val etPort = EditText(this).apply { hint = "Порт (19132)"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
         val etNick = EditText(this).apply { hint = "Ваш ник"; setTextColor(Color.WHITE); setHintTextColor(Color.GRAY) }
-        
+
         val accentColor = ThemeManager.getAccentColor(this)
 
         val btnNext = Button(this).apply {
@@ -85,17 +80,42 @@ class MainActivity : Activity() {
         setContentView(mainLayout)
     }
 
-    private fun showSettingsDialog() {
+    private fun showColorPicker() {
         val builder = AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
-        builder.setTitle("Выберите цвет темы")
-        
-        val colorNames = ThemeManager.colors.map { it.first }.toTypedArray()
-        builder.setItems(colorNames) { _, which ->
-            val selectedColor = ThemeManager.colors[which].second
-            ThemeManager.setAccentColor(this, selectedColor)
-            recreate() // Перезагружаем экран, чтобы применить цвет
+        builder.setTitle("Выберите цвет кнопок")
+
+        val colorLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(20, 40, 20, 40)
         }
-        
+
+        // Берем цвета из ThemeManager
+        for (colorPair in ThemeManager.colors) {
+            val colorInt = colorPair.second
+            
+            // Используем View вместо Button (чтобы не было вылетов)
+            val colorCircle = View(this).apply {
+                val drawable = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(colorInt)
+                }
+                background = drawable
+                
+                // Размер кружка 80x80
+                layoutParams = LinearLayout.LayoutParams(80, 80).apply {
+                    setMargins(10, 0, 10, 0)
+                }
+                
+                setOnClickListener {
+                    ThemeManager.setAccentColor(this@MainActivity, colorInt)
+                    recreate() // Обновляем экран
+                }
+            }
+            colorLayout.addView(colorCircle)
+        }
+
+        builder.setView(colorLayout)
         builder.setNegativeButton("Отмена", null)
         builder.show()
     }
