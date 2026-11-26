@@ -9,14 +9,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import bridge.Bridge
-import bridge.BridgeConfig
 import kotlin.concurrent.thread
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Создаем экран прямо в коде, без R.layout
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(50, 50, 50, 50)
@@ -58,7 +56,8 @@ class MainActivity : Activity() {
         
         thread {
             try {
-                val res = Bridge.connectToServer(BridgeConfig(ip, nick, os, model))
+                // Вызываем функцию напрямую с 4 аргументами
+                val res = Bridge.connectToServer(ip, nick, os, model)
                 runOnUiThread {
                     tv.text = res
                     if (res == "Успешно подключено!") {
