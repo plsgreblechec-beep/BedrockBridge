@@ -10,23 +10,15 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
 )
 
-type BridgeConfig struct {
-	ServerAddr  string
-	Nickname    string
-	DeviceOS    int32
-	DeviceModel string
-}
-
-func ConnectToServer(config BridgeConfig) string {
+func ConnectToServer(serverAddr string, nickname string, deviceOS int32, deviceModel string) string {
 	dialer := minecraft.Dialer{
 		IdentityData: login.IdentityData{
-			DisplayName: config.Nickname,
+			DisplayName: nickname,
 			Identity:    "00000000-0000-0000-0000-000000000000",
 		},
 		ClientData: login.ClientData{
-			// Вот здесь мы явно приводим тип к protocol.DeviceOS
-			DeviceOS:    protocol.DeviceOS(config.DeviceOS),
-			DeviceModel: config.DeviceModel,
+			DeviceOS:    protocol.DeviceOS(deviceOS),
+			DeviceModel: deviceModel,
 			LanguageCode: "ru_RU",
 		},
 	}
@@ -34,7 +26,7 @@ func ConnectToServer(config BridgeConfig) string {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	conn, err := dialer.DialContext(ctx, "raknet", config.ServerAddr)
+	conn, err := dialer.DialContext(ctx, "raknet", serverAddr)
 	if err != nil {
 		return fmt.Sprintf("Ошибка: %v", err)
 	}
