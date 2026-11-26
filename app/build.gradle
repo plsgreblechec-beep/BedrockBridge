@@ -27,10 +27,14 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/INDEX.LIST', 'META-INF/DEPENDENCIES']
+        }
+    }
 }
 
 dependencies {
-    // Указываем официальный URL для AppCompat
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation files('libs/bridge.aar')
+    implementation 'org.cloudburstmc:protocol:3.0.0.Beta4-SNAPSHOT'
+    implementation 'org.cloudburstmc:nukkit:1.0.0'
 }
