@@ -1,13 +1,17 @@
 package com.example.bedrockbridge
 
 import android.app.Activity
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.Button
+import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import bridge.Bridge
+import kotlin.concurrent.thread
 
 class GameActivity : Activity() {
     private lateinit var tvTimer: TextView
@@ -25,34 +29,61 @@ class GameActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Создаем интерфейс вручную, без R.id
-        val layout = LinearLayout(this).apply { 
+        val ip = intent.getStringExtra("IP") ?: ""
+        val nick = intent.getStringExtra("NICK") ?: ""
+        val os = intent.getIntExtra("OS", 1)
+        val model = intent.getStringExtra("MODEL") ?: ""
+
+        // Черный фон для всего экрана
+        window.decorView.setBackgroundColor(Color.BLACK)
+
+        val mainLayout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(50, 50, 50, 50)
+            gravity = Gravity.CENTER
         }
-        
-        tvTimer = TextView(this).apply { 
+
+        // Создаем белый круг (только рамка)
+        val circleLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            
+            val drawable = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setStroke(10, Color.WHITE) // Белая рамка
+                setColor(Color.TRANSPARENT) // Пустой внутри
+            }
+            background = drawable
+            layoutParams = LinearLayout.LayoutParams(700, 700)
+            
+            // Нажатие на круг = выход
+            setOnClickListener { finish() }
+        }
+
+        // Таймер внутри круга
+        tvTimer = TextView(this).apply {
             text = "00:00"
-            textSize = 24f 
+            textSize = 48f
+            setTextColor(Color.WHITE)
         }
-        
-        val btnJump = Button(this).apply { text = "Прыжок" }
-        val btnAttack = Button(this).apply { text = "Удар" }
-        val btnExit = Button(this).apply { text = "Выход" }
-        
-        layout.addView(tvTimer)
-        layout.addView(btnJump)
-        layout.addView(btnAttack)
-        layout.addView(btnExit)
-        
-        setContentView(layout)
+
+        circleLayout.addView(tvTimer)
+        mainLayout.addView(circleLayout)
+        setContentView(mainLayout)
 
         handler.post(tick)
 
-        // Обработчики нажатий для наших кнопок
-        btnJump.setOnClickListener { Toast.makeText(this, "Прыжок", Toast.LENGTH_SHORT).show() }
-        btnAttack.setOnClickListener { Toast.makeText(this, "Удар", Toast.LENGTH_SHORT).show() }
-        btnExit.setOnClickListener { finish() }
+        // Подключение к серверу
+        Toast.makeText(this, "Подключение к $ip как $model...", Toast.LENGTH_LONG).show()
+        thread {
+            val res = Bridge.connectToServer(ip, nick, os, model)
+            runOnUiThread {
+                if (res != "Успешно подключено!") {
+                    Toast.makeText(this, res, Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "Успешно!", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
