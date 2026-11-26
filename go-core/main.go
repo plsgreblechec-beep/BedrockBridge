@@ -9,7 +9,6 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/protocol"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
-	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 )
 
 func ConnectToServer(serverAddr string, nickname string, deviceOS int32, deviceModel string) string {
@@ -27,8 +26,8 @@ func ConnectToServer(serverAddr string, nickname string, deviceOS int32, deviceM
 			DeviceModel: deviceModel,
 			LanguageCode: "ru_RU",
 		},
-		// Указываем, что хотим использовать самый свежий протокол
-		Protocol: protocol.DefaultProtocol,
+		// Используем CurrentProtocol, чтобы автоматически подтягивалась самая новая версия
+		Protocol: protocol.CurrentProtocol,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -39,9 +38,6 @@ func ConnectToServer(serverAddr string, nickname string, deviceOS int32, deviceM
 		return fmt.Sprintf("Ошибка: %v", err)
 	}
 	defer conn.Close()
-    
-    // Небольшая пауза, чтобы клиент успел прогрузить мир (опционально)
-    _ = packet.Text{} 
 
 	return "Успешно подключено!"
 }
