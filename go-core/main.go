@@ -28,7 +28,8 @@ func ConnectToServer(serverAddr string, nickname string, deviceOS int32, deviceM
 		},
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	// Увеличили таймаут до 30 секунд
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	conn, err := dialer.DialContext(ctx, "raknet", serverAddr)
