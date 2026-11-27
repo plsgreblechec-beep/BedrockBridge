@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 
 class SelectDeviceActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,45 +23,102 @@ class SelectDeviceActivity : Activity() {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(50, 50, 50, 50)
+            setPadding(40, 40, 40, 40)
         }
 
-        val btnPc = Button(this).apply {
+        // --- БЛОК ПК ---
+        val tvPc = TextView(this).apply {
+            text = "Железо ПК: ${DeviceGenerator.getCurrentPC(this@SelectDeviceActivity)}"
+            setTextColor(Color.GRAY)
+            textSize = 14f
+            gravity = Gravity.CENTER
+        }
+        val btnPcConnect = Button(this).apply {
             text = "ПК"
-            textSize = 22f
+            textSize = 20f
             setBackgroundColor(accentColor)
             setTextColor(Color.WHITE)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 250
-            ).apply { setMargins(0, 20, 0, 20) }
-            setOnClickListener { goToGame(ip, nick, 7, DeviceGenerator.getRandomPC()) }
+            setOnClickListener { goToGame(ip, nick, 7, DeviceGenerator.getCurrentPC(this@SelectDeviceActivity)) }
+        }
+        val btnPcChange = Button(this).apply {
+            text = "Заменить железо ПК"
+            textSize = 12f
+            setBackgroundColor(Color.DKGRAY)
+            setTextColor(Color.WHITE)
+            setOnClickListener {
+                DeviceGenerator.changePC(this@SelectDeviceActivity)
+                Toast.makeText(this@SelectDeviceActivity, "ПК железо изменено", Toast.LENGTH_SHORT).show()
+                recreate() // Обновляем экран, чтобы показать новое железо
+            }
         }
 
-        val btnPhone = Button(this).apply {
+        // --- БЛОК ТЕЛЕФОНА ---
+        val tvPhone = TextView(this).apply {
+            text = "Железо Телефона: ${DeviceGenerator.getCurrentPhone(this@SelectDeviceActivity)}"
+            setTextColor(Color.GRAY)
+            textSize = 14f
+            gravity = Gravity.CENTER
+            setPadding(0, 40, 0, 0)
+        }
+        val btnPhoneConnect = Button(this).apply {
             text = "ТЕЛЕФОН"
-            textSize = 22f
+            textSize = 20f
             setBackgroundColor(accentColor)
             setTextColor(Color.WHITE)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 250
-            ).apply { setMargins(0, 20, 0, 20) }
-            setOnClickListener { goToGame(ip, nick, 1, DeviceGenerator.getRandomPhone()) }
+            setOnClickListener { goToGame(ip, nick, 1, DeviceGenerator.getCurrentPhone(this@SelectDeviceActivity)) }
+        }
+        val btnPhoneChange = Button(this).apply {
+            text = "Заменить железо Телефона"
+            textSize = 12f
+            setBackgroundColor(Color.DKGRAY)
+            setTextColor(Color.WHITE)
+            setOnClickListener {
+                DeviceGenerator.changePhone(this@SelectDeviceActivity)
+                Toast.makeText(this@SelectDeviceActivity, "Железо телефона изменено", Toast.LENGTH_SHORT).show()
+                recreate()
+            }
         }
 
-        val btnConsole = Button(this).apply {
+        // --- БЛОК КОНСОЛИ ---
+        val tvConsole = TextView(this).apply {
+            text = "Железо Консоли: ${DeviceGenerator.getCurrentConsole(this@SelectDeviceActivity)}"
+            setTextColor(Color.GRAY)
+            textSize = 14f
+            gravity = Gravity.CENTER
+            setPadding(0, 40, 0, 0)
+        }
+        val btnConsoleConnect = Button(this).apply {
             text = "КОНСОЛЬ"
-            textSize = 22f
+            textSize = 20f
             setBackgroundColor(accentColor)
             setTextColor(Color.WHITE)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 250
-            ).apply { setMargins(0, 20, 0, 20) }
-            setOnClickListener { goToGame(ip, nick, 13, DeviceGenerator.getRandomConsole()) }
+            setOnClickListener { goToGame(ip, nick, 13, DeviceGenerator.getCurrentConsole(this@SelectDeviceActivity)) }
+        }
+        val btnConsoleChange = Button(this).apply {
+            text = "Заменить железо Консоли"
+            textSize = 12f
+            setBackgroundColor(Color.DKGRAY)
+            setTextColor(Color.WHITE)
+            setOnClickListener {
+                DeviceGenerator.changeConsole(this@SelectDeviceActivity)
+                Toast.makeText(this@SelectDeviceActivity, "Железо консоли изменено", Toast.LENGTH_SHORT).show()
+                recreate()
+            }
         }
 
-        layout.addView(btnPc)
-        layout.addView(btnPhone)
-        layout.addView(btnConsole)
+        // Добавляем все на экран
+        layout.addView(tvPc)
+        layout.addView(btnPcConnect)
+        layout.addView(btnPcChange)
+
+        layout.addView(tvPhone)
+        layout.addView(btnPhoneConnect)
+        layout.addView(btnPhoneChange)
+
+        layout.addView(tvConsole)
+        layout.addView(btnConsoleConnect)
+        layout.addView(btnConsoleChange)
+
         setContentView(layout)
     }
 
